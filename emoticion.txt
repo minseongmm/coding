@@ -1,0 +1,59 @@
+//이모티콘 14226
+// 화면과 클립보드를 이용하여 원하는 이모티콘 갯수 맞추기
+// bfs 사용
+// 영선이가 할 수있는 세개의 연산은 미로에서 세 방향으로 움직일 수 있는 것과 비슷
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <cstring>
+#include <tuple>
+
+using namespace std;
+
+int s; // 만들어야 하는 이모티콘수
+queue<pair<int,int>> q;
+int clip=0;
+int dest = 0;
+int d[1001][1001];
+
+int bfs() {
+	while (!q.empty()) {
+
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+
+		if (x == s) {
+			cout << d[x][y];
+			return 0;
+		}
+
+		else {
+			if (d[x][x] == -1) {
+				d[x][x] = d[x][y] + 1;
+				q.push(make_pair(x, x));
+			}
+			if (x + y <= s && d[x + y][y] == -1) {
+				d[x + y][y] = d[x][y] + 1;
+				q.push(make_pair(x + y, y));
+			}
+
+			if (x - 1 >= 0 && d[x - 1][y] == -1) {
+				d[x - 1][y] = d[x][y] + 1;
+				q.push(make_pair(x - 1, y));
+			}
+		}
+	}
+}
+int main() {
+
+	cin >> s;
+	q.push(make_pair(1,0));
+	memset(d, -1, sizeof(d));
+	d[1][0] = 0;
+
+	bfs();
+
+	return 0;
+}
