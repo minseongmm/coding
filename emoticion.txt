@@ -2,20 +2,21 @@
 // 화면과 클립보드를 이용하여 원하는 이모티콘 갯수 맞추기
 // bfs 사용
 // 영선이가 할 수있는 세개의 연산은 미로에서 세 방향으로 움직일 수 있는 것과 비슷
+// 처음에는 메모리 5900kb에 시간 16ms가 나왔지만, bfs를 끝까지 돌리지 ㅇ낳고
+// 답이 나오면 출력하고 함수를 끝내게 만들었더니 시간은 0ms로 감소
+// 메모리 크기는 똑같음
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
 #include <queue>
 #include <cstring>
-#include <tuple>
 
 using namespace std;
 
 int s; // 만들어야 하는 이모티콘수
 queue<pair<int,int>> q;
-int clip=0;
-int dest = 0;
-int d[1001][1001];
+int d[1001][1001]; // 화면에 x개, 클립보드에 y개 있는 상태까지 걸리는 시간 = d[x][y]
 
 int bfs() {
 	while (!q.empty()) {
@@ -24,22 +25,22 @@ int bfs() {
 		int y = q.front().second;
 		q.pop();
 
-		if (x == s) {
-			cout << d[x][y];
-			return 0;
+		if (x == s) { // 원하는 s개가 나오면
+			cout << d[x][y]; // 출력 후
+			return 0; // 함수 종료
 		}
 
 		else {
-			if (d[x][x] == -1) {
+			if (d[x][x] == -1) { // 1. 클립보드에 복사
 				d[x][x] = d[x][y] + 1;
 				q.push(make_pair(x, x));
 			}
-			if (x + y <= s && d[x + y][y] == -1) {
+			if (x + y <= s && d[x + y][y] == -1) { // 2. 클립보드에서 화면으로 복사
 				d[x + y][y] = d[x][y] + 1;
 				q.push(make_pair(x + y, y));
 			}
 
-			if (x - 1 >= 0 && d[x - 1][y] == -1) {
+			if (x - 1 >= 0 && d[x - 1][y] == -1) { // 3. 화면에서 1개 감소
 				d[x - 1][y] = d[x][y] + 1;
 				q.push(make_pair(x - 1, y));
 			}
@@ -49,8 +50,8 @@ int bfs() {
 int main() {
 
 	cin >> s;
-	q.push(make_pair(1,0));
-	memset(d, -1, sizeof(d));
+	q.push(make_pair(1,0)); // 시작점 화면에 1개 클립보드에 0개인 상태 넣음
+	memset(d, -1, sizeof(d)); // d[][]를 모두 -1로 초기화
 	d[1][0] = 0;
 
 	bfs();
