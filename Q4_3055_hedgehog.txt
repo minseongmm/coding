@@ -1,0 +1,131 @@
+//메모리 2012KB, 시간 0ms
+//문제3055 탈출(고슴도치를 살리자!!)
+// bfs를 이용해 각 구역에 물이 차는 시간을 저장해 놓고
+// 다시 bfs를 이용해 물이 차기전에 고슴도치가 이동할 수 있는 루트를 조사
+// if문이 너무 더럽다. 더 깔끔하게 할 수 있지 않을까.
+
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <cstdio>
+#include <string>
+#include <cstring>
+using namespace std;
+
+int r, c;
+int qx[] = { 0, 0, 1, -1 };
+int qy[] = { 1, -1, 0, 0 };
+queue<pair<int, int>> q; // 물이 차는 bfs를 위한큐
+queue<pair<int, int>> dochi; // 고슴도치 이동 bfs를 위한 큐
+int miro[50][50];
+int d_water[50][50];
+int d_dochi[50][50];
+
+void bfs() {
+
+	while (!q.empty()) {
+		int a = q.front().first;
+		int b = q.front().second;
+
+		q.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int da = a + qx[i];
+			int db = b + qy[i];
+
+			if (da >= 0 && da < r && db >= 0 && db < c && d_water[da][db] == -1) {
+				//da와 db가 범위에서 안 벗어나고, 아직 물이 차지 않는 곳일때
+				//d_water배열의 값을 물이 찰 수 있는 곳은 -1로 초기화했기 때문에
+				//해당 미로의 값이 X인지 D인지 하는 조건은 따로 필요 없다.
+				d_water[da][db] = d_water[a][b] + 1; // 물이 차는 시간 표시
+				q.push(make_pair(da, db));
+			}
+		}
+	}
+}
+
+
+int main() {
+	cin >> r >> c;
+	vector<string> temp(r); // string으로 들어오는 기호값들을 받기 위해서
+
+	for (int i = 0; i < r; i++)
+		cin >> temp[i];
+
+	int goal_x, goal_y;
+	for (int i = 0; i < r; i++) {
+		for (int j = 0; j < c; j++) {
+			// 기호는 총 5가지가 있다.
+			// 비어있는 곳 1 . 물 차 있는 곳 *. 돌 3. 비버 굴 4. 고슴도치 5로 임의 설정했다.
+			if (temp[i][j] == '*') // 물 차 있는 곳이면
+			{
+				miro[i][j] = 2; // 해당 값에 2를 넣고
+				q.push(make_pair(i, j)); // 큐에 삽입
+				d_water[i][j] = 0; // d_water 값이 0이면 물이 시작되는 뜻
+			}
+
+			else if (temp[i][j] == '.') { // 비어있는 곳 
+				miro[i][j] = 1; // 값은 1
+				d_water[i][j] = -1; // d_water 값이 -1이면 물이 없지만 찰 수 있는 공간
+			}
+
+			else if (temp[i][j] == 'S') {
+				miro[i][j] = 5;
+				d_water[i][j] = -1;
+				dochi.push(make_pair(i, j));
+			}
+
+			else if (temp[i][j] == 'D') {
+				miro[i][j] = 4;
+				goal_x = i, goal_y = j;
+				d_water[i][j] = -2; // d_water 값이 -2이면 물이 없고, 찰수도 없는 공간
+			}
+
+			else if (temp[i][j] == 'X')
+			{
+				miro[i][j] = 3;
+				d_water[i][j] = -2;
+			}
+		}
+	}
+
+	bfs();
+
+	int aa = dochi.front().first;
+	int bb = dochi.front().second;
+
+	memset(d_dochi, -1, sizeof(d_dochi));
+	d_dochi[aa][bb] = 0;
+
+	while (!dochi.empty()) {
+		aa = dochi.front().first;
+		bb = dochi.front().second;
+
+		dochi.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int daa = aa + qx[i];
+			int dbb = bb + qy[i];
+
+			if (daa >= 0 && daa < r && dbb >= 0 && dbb < c) // 값이 배열크기를 안 벗어나고
+			{
+				if ((d_dochi[aa][bb] + 1 < d_water[daa][dbb]) || d_water[daa][dbb] == -1 || miro[daa][dbb]==4)
+					// 고슴도치 이동시간이 물 차는 시간보다 늦거나, 물이 아예 차지 않은 곳이나, 비버 굴이고
+				{
+					if ((miro[daa][dbb] == 1 || miro[daa][dbb] == 4) && d_dochi[daa][dbb] == -1) {
+						// 비어있거나 비어 굴이고, 아직 고슴도치가 안간곳이면
+						d_dochi[daa][dbb] = d_dochi[aa][bb] + 1;
+						dochi.push(make_pair(daa, dbb));
+					}
+				}
+			}
+		}
+	}
+
+	if (d_dochi[goal_x][goal_y] == -1) // 비버굴에 못도착하면
+		cout << "KAKTUS";
+
+	else
+		cout << d_dochi[goal_x][goal_y];
+	return 0;
+}
