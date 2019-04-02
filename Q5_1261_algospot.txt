@@ -1,0 +1,71 @@
+//1261 알고스팟
+//최소한의 벽을 깨부수고 탈출하는 방법
+//메모리 2064kb 시간 4ms
+//지나가는 경로의 미로값들을 합쳐서 최솟값을 찾는다
+//합이 작으면 0이 최대라는 뜻이고, 벽을 최소로 뿌셨다는 것
+
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <cstdio>
+#include <cstring>
+
+using namespace std;
+
+queue<pair<int, int>> q;
+int dx[] = { 0, 0, 1, -1 };
+int dy[] = { 1, -1, 0, 0 };
+int n, m;
+int miro[100][100];
+int d[100][100];
+
+void bfs() {
+
+
+	while (!q.empty()) {
+		int a = q.front().first;
+		int b = q.front().second;
+		q.pop();
+
+		for (int i = 0; i < 4; i++) {
+			int a_move = a + dx[i];
+			int b_move = b + dy[i];
+
+			if (a_move >= 0 && a_move < n && b_move >= 0 && b_move < m)
+			{
+				if (d[a_move][b_move] == -1)
+				{
+					d[a_move][b_move] = d[a][b] + miro[a_move][b_move];
+					q.push(make_pair(a_move, b_move));
+				}
+
+				else if (d[a_move][b_move] > d[a][b] + miro[a_move][b_move])
+				{
+					d[a_move][b_move] = d[a][b] + miro[a_move][b_move];
+					q.push(make_pair(a_move, b_move));
+				}
+			}
+		}
+	}
+}
+
+int main() {
+	cin >> m >> n;
+
+	memset(miro, -1, sizeof(miro));
+	memset(d, -1, sizeof(d));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++)
+			scanf("%1d", &miro[i][j]);
+	}
+	d[0][0] = 0;
+	q.push(make_pair(0, 0));
+
+	bfs();
+
+	cout << d[n - 1][m - 1];
+
+	return 0;
+}

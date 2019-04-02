@@ -1,0 +1,28 @@
+//11727번 2 X n 타일링 2
+//dp문제
+//bottomup 방식 메모리 1992kb 시간 0ms
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+int d[1002];
+
+int main() {
+
+	d[1] = 1;
+	d[2] = 3;
+
+	int n;
+	cin >> n;
+
+	for (int i = 3; i <= n; i++) {
+		d[i] = d[i - 1] + (2 * d[i - 2]);
+		d[i] = d[i] % 10007;
+	}
+
+	cout << d[n];
+
+	return 0;
+}
