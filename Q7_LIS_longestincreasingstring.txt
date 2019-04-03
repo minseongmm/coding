@@ -1,0 +1,43 @@
+// 11053 제일 긴 증가하는 수열
+// df를 이용
+// st 배열에는 입력받은 string 값을 저장
+// d[i] 배열에는 i번째까지의 최대 길이를 저장
+// d[i] 의 최댓값은 st[i]보다 작은 st[j]인 j중에서 d[j]의 최댓ㄱ밧 +1
+// 메모리 1996kb 시간 0ms
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+int n;
+int st[1002];
+int d[1002];
+
+int main() {
+	cin >> n;
+
+	for (int i = 0; i < n; i++)
+		cin >> st[i];
+
+	d[0] = 1;
+	int ma = 1;
+	// d[0]과 ma의 기본 값을 0으로 했더니 틀렸다.
+	// 기본값은 1로 설정
+
+	for (int i = 1; i < n; i++) {
+		d[i] = 1;
+
+		for (int j = 0; j < i; j++) {
+			if (st[i] > st[j]) {
+				d[i] = max(d[j] + 1, d[i]);
+			}
+
+			ma = max(d[i], ma);
+		}
+	}
+		cout << ma;
+}
