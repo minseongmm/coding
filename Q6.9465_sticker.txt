@@ -1,0 +1,59 @@
+//9465번 스티커 문제
+//스티커를 떼면 해당 스티커의 인접한 변이 모두 뜯어진다.
+//이 때 얻을 수 있는 최대점수를 구하시오.
+//dp를 이용해서 해당 열까지의 최댓값들을 구함
+//다음 열의 값을 구할 때는 전 열의 최댓값 참고
+//메모리 14488kb 시간 248m
+
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int t, n;
+int score[3][100001];
+int sticker[2][100001];
+
+int main (){
+
+	cin >> t; // 테케 갯수
+	int z = 0;
+
+	while (1) {
+		cin >> n; // 줄의 수
+
+		if (t == z)
+			break;
+
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < n; j++)
+				cin >> sticker[i][j];
+
+		// 첫 열 상황 저장
+		score[0][0] = 0; // 스티커를 안 뗐을 때
+		score[1][0] = sticker[0][0]; // 첫 열 위의 스티커를 뗐을 때
+		score[2][0] = sticker[1][0]; // 첫 열 아래의 스티커를 뗐을 때
+
+		for (int j = 1; j < n; j++) {// 전 열의 최댓값을 참고하여 해당 열의 최댓값 구함
+			score[0][j] = max(max(score[0][j - 1], score[1][j - 1]), score[2][j - 1]);
+			score[1][j] = max(score[2][j - 1], score[0][j - 1]) + sticker[0][j];
+			score[2][j] = max(score[1][j - 1], score[0][j - 1]) + sticker[1][j];
+		}
+
+		int ma = 0;
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < n; j++) {
+				if (ma < score[i][j])
+					ma = score[i][j];
+				// 총 값들 중에서 최댓값 구함
+			}
+		}
+
+		cout << ma << "\n";
+		//출력
+		z++;
+	}
+
+	return 0;
+}
