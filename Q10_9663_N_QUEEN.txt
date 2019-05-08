@@ -1,0 +1,55 @@
+// 백준 9663 N퀸 문제
+// 메모리 1988kb 시간 1720 ms
+// check 함수를 이용해 퀸을 놓을 수 있는지 확인
+// 백트래킹과 bool을 이용해 시간초과가 나지 않게 구성
+// check 함수를 따로 안 만들고 cal 함수에서 if문으로 넣으면
+// 좀더 시간을 줄일 수 있다.
+
+#include <iostream>
+
+using namespace std;
+bool check_row[16];
+bool check_1[31];
+bool check_2[31];
+
+int n;
+
+int check(int row, int col) {
+	if (check_row[col]) // 해당 열에 이미 놓인 퀸이 있는지 확인
+		return false;
+
+	if (check_1[row + col]) // 오른쪽 대각선에 퀸이 있는지 확인
+		return false;
+
+	if (check_2[row - col + n]) // 왼쪽 대각선에 퀸이 있는지 확인
+		return false;
+
+	return true;
+}
+
+int cal(int row) {
+	if (row == n) // n개의 퀸을 놓으면
+		return 1; // 성공적인 case 1개를 달성했으니 1 return
+
+	int cnt = 0;
+
+	for (int col = 0; col < n; col++) {
+		if (check(row, col)) { // 퀸을 놓을 수 있으면
+			check_row[col] = true; // 해당 열에 표시
+			check_1[row + col] = true; // 오른쪽 대각선 라인에 표시
+			check_2[row - col + n] = true; // 왼쪽 대각선 라인에 표시
+			cnt += cal(row + 1); // 다음 행에 놓을 퀸을 위해 함수 호출
+			check_row[col] = false;
+			check_1[row + col] = false;
+			check_2[row - col + n] = false;
+
+		}
+	}
+	return cnt;
+}
+int main() {
+	cin >> n;
+	cout << cal(0);
+
+	return 0;
+}

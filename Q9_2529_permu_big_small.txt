@@ -1,0 +1,66 @@
+// 백준 2529 부등호 문제
+// 부등호의 조건을 맞추는 최댓값 행렬과 최솟값 행렬 구하기
+// permutaion_next, permutation_prev 사용
+// 메모리 1988kb 시간 12ms
+//permutation 함수 사용안하면 더 빠르게 짤 수 있음
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+bool check(vector<int> &num, vector<char> &sign) {
+	for (int i = 0; i < sign.size(); i++) {
+		if (sign[i] == '>' && num[i + 1] > num[i])
+					return false;
+        
+		if (sign[i] == '<' && num[i + 1] < num[i])
+					return false;
+ 		// elseif로 하면 20ms if로 하면 16ms
+
+		}
+	return true;
+}
+
+int main() {
+
+	int n;
+	cin >> n;
+	vector<char> ch(n);
+
+	for (int i = 0; i < n; i++) {
+		cin >> ch[i];
+	}
+
+	vector<int> max(n + 1); // 연산자 보다 숫자의 갯수가 하나더 많음
+	vector<int> min(n + 1);
+
+	for (int i = 0; i < n + 1; i++) {
+		max[i] = 9 - i;
+		min[i] = i;
+	}
+
+	do {
+		if (check(max, ch))
+			break;
+	} while (prev_permutation(max.begin(), max.end()));
+
+	do {
+		if (check(min, ch))
+			break;
+	} while (next_permutation(min.begin(), min.end()));
+
+	for (int i = 0; i < max.size(); i++) {
+		cout << max[i];
+	}
+    
+	cout << '\n';
+
+	for (int i = 0; i < min.size(); i++) {
+		cout << min[i];
+	}
+    
+	return 0;
+
+}
